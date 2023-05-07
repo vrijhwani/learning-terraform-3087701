@@ -17,7 +17,7 @@ data "aws_ami" "app_ami" {
 module "blog_vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = "dev-varun"
+  name = "dev"
   cidr = "10.0.0.0/16"
 
   azs             = ["us-west-2a", "us-west-2b", "us-west-2c"]
@@ -34,7 +34,7 @@ module "blog_vpc" {
 resource "aws_instance" "blog" {
   ami                    = data.aws_ami.app_ami.id
   instance_type          = var.instance_type
-  subnet_id              = module.blog_vpc.public_subnets[0]
+
   vpc_security_group_ids = [module.blog-sg.security_group_id]
 
   tags = {
@@ -47,7 +47,7 @@ module "blog-sg" {
   version = "4.17.2"
   name = "blog"
 
-  vpc_id = module.blog_vpc.vpc_id
+  vpc_id = module.blog_vpc.public_subnets[0]
 
   ingress_rules        = ["http-80-tcp", "https-443-tcp"]
   ingress_cidr_blocks  = ["0.0.0.0/0"]
